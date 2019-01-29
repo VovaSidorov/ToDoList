@@ -16,6 +16,9 @@ export default class App extends Component  {
             {label:"Have a lunch", important: false, id:3}
         ]
     };
+
+
+
     deleteItem = (id) =>{
         this.setState(({toDoData})=>{
             const idx = toDoData.findIndex((el)=>el.id===id);
@@ -35,6 +38,7 @@ export default class App extends Component  {
           id: this.state.toDoData.length+1
       };
 
+
       this.setState(({toDoData})=>{
           const newArr=[
               ...toDoData,
@@ -48,6 +52,14 @@ export default class App extends Component  {
     };
 
 
+    onToggleImportant = (id)=>{
+        console.log('Toggle Important',id);
+    };
+
+    onToggleDone = (id)=>{
+        console.log('Toggle Done',id);
+    };
+
     render(){
     return (
         <div className="todo-app ">
@@ -59,7 +71,10 @@ export default class App extends Component  {
 
             <ToDoList
                 todos = {this.state.toDoData}
-                onDeleted={this.deleteItem}/>
+                onDeleted={this.deleteItem}
+                onToggleImportant={this.onToggleImportant}
+                onToggleDone={this.onToggleDone}
+            />
                 <ItemAddForm
                 onItemAdded={this.addItem} />
         </div>
