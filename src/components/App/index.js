@@ -9,15 +9,25 @@ import ItemAddForm from "../ItemAddForm";
 
 export default class App extends Component  {
 
+    key = 0;
+
     state ={
         toDoData: [
-            {label:"Drink Coffe", important: false, id:1},
-            {label:"Make awesome App", important: true, id:2},
-            {label:"Have a lunch", important: false, id:3}
+            this.createToDoItem("Drink Coffe"),
+            this.createToDoItem("Make awesome App"),
+            this.createToDoItem("Have a lunch")
         ]
     };
 
 
+    createToDoItem(label,id){
+        return {
+            label,
+            important:false,
+            done:false,
+            id:this.key++
+        }
+    }
 
     deleteItem = (id) =>{
         this.setState(({toDoData})=>{
@@ -32,12 +42,7 @@ export default class App extends Component  {
     };
 
     addItem = (text) =>{
-      const newItem = {
-          label: text,
-          important: false,
-          id: this.state.toDoData.length+1
-      };
-
+      const newItem = this.createToDoItem(text);
 
       this.setState(({toDoData})=>{
           const newArr=[
@@ -51,26 +56,54 @@ export default class App extends Component  {
       });
     };
 
+    toggleProperty(arr,id,propName){
+        const idx = arr.findIndex((el)=>el.id===id);
+        const oldItem = arr[idx];
+        const newItem = {...oldItem,[propName]:!oldItem[propName]};
+
+        return[
+            ...arr.slice(0,idx),
+            newItem,
+            ...arr.slice(idx+1)
+        ];
+    }
 
     onToggleImportant = (id)=>{
-        console.log('Toggle Important',id);
+        this.setState(({toDoData})=>{
+            const lastId = toDoData.length;
+            console.log("last elemetn "+lastId);
+
+            return {
+                toDoData: this.toggleProperty(toDoData,id,'important')
+        }
+        });
     };
 
     onToggleDone = (id)=>{
-        console.log('Toggle Done',id);
+        this.setState(({toDoData})=>{
+            const lastId = toDoData.length;
+            console.log("last elemetn "+lastId);
+            return {
+                toDoData: this.toggleProperty(toDoData,id,'done')
+            }
+        });
     };
 
     render(){
+        const {toDoData} = this.state;
+        const doneCount = toDoData.filter((el)=>el.done).length;
+        const toDoCount = toDoData.length-doneCount;
+
     return (
         <div className="todo-app ">
-            <AppHeader toDo={1} done={3}/>
+            <AppHeader toDo={toDoCount} done={doneCount}/>
             <div className="top-panel ">
                 <SearchPanel />
                 <ItemStatusFilter/>
             </div>
 
             <ToDoList
-                todos = {this.state.toDoData}
+                todos = {toDoData}
                 onDeleted={this.deleteItem}
                 onToggleImportant={this.onToggleImportant}
                 onToggleDone={this.onToggleDone}
